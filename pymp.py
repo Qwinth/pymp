@@ -1,18 +1,17 @@
-import sys
+import time, sys
 from pygame import mixer
 from multiprocessing import Process, Pipe
 mixer.init()
+
 def process(cc):
-    mixer.music.load(cc.recv()[0])
+    music = cc.recv()[0]
+    mixer.music.load(music)
+    mtime = mixer.Sound(music).get_length()
     recv = cc.recv()
     if recv == ['play']:
         cc.send([])
         mixer.music.play()
-        while True:
-            if mixer.music.get_busy() == 0:
-                break
-    
-        
+        time.sleep(mtime)
 
 
 if __name__ == '__main__':
@@ -21,16 +20,16 @@ if __name__ == '__main__':
         pc, cc = Pipe()
         Process(target=process, args=(cc,)).start()
         mixer.music.load(sys.argv[2])
+        mtime = mixer.Sound(sys.argv[2]).get_length()
         pc.send([sys.argv[3]])
         pc.send(['play'])
         pc.recv()
         mixer.music.play()
-        while True:
-            if mixer.music.get_busy() == 0:
-                break
+        time.sleep(mtime)
+       break
+    
     else:
         mixer.music.load(sys.argv[1])
+        mtime = mixer.Sound(sys.argv[1]).get_length()
         mixer.music.play()
-        while True:
-            if mixer.music.get_busy() == 0:
-                break
+        time.sleep(mtime)
