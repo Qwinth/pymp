@@ -24,8 +24,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--parallel', action='store_true')
     parser.add_argument('-l', '--loop', action='store_true')
+    parser.add_argument('-v', '--volume')
     parser.add_argument('path', nargs='+')
     args = parser.parse_args()
+    if args.volume:
+        mixer.music.set_volume(float(args.volume) / 100)
+    else:
+        mixer.music.set_volume(1.0)
     if args.loop: While = True
     else: While = False
     if args.parallel:
